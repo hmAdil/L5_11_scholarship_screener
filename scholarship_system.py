@@ -16,6 +16,7 @@ OPERATORS = {
     ast.Div: operator.truediv,
 }
 
+
 def safe_eval(node, variables):
     """Evaluate a restricted arithmetic expression tree."""
     if isinstance(node, ast.Expression):
@@ -32,10 +33,12 @@ def safe_eval(node, variables):
         return -safe_eval(node.operand, variables)
     raise ValueError("unsupported expression")
 
+
 def calculate_merit_score(gpa, activity_credits):
     """Return the merit score using the active formula."""
     tree = ast.parse(SETTINGS["formula"], mode="eval")
     return safe_eval(tree, {"gpa": gpa, "credits": activity_credits})
+
 
 def validate_scores(test_scores):
     """Return validated (gpa, credits, income) or raise ValueError."""
@@ -50,6 +53,7 @@ def validate_scores(test_scores):
         raise ValueError("income is missing or negative")
     return gpa, activity_credits, income
 
+
 def evaluate_applicant(student_id, test_scores, logs=None):
     """Score one applicant and record the result."""
     if logs is None:
@@ -61,6 +65,7 @@ def evaluate_applicant(student_id, test_scores, logs=None):
     logs.append(f"{student_id} scored {score}")
     return eligible
 
+
 def change_formula(new_formula):
     """Switch to a new formula if it is a valid arithmetic expression."""
     try:
@@ -71,10 +76,12 @@ def change_formula(new_formula):
     SETTINGS["formula"] = new_formula
     return True
 
+
 def persist_results(file="scholarships.json"):
     """Write results to a JSON file."""
     with open(file, "w", encoding="utf-8") as handle:
         json.dump(RESULTS, handle)
+
 
 def load_results(file="scholarships.json"):
     """Load results from a JSON file if it exists and is valid."""
@@ -87,12 +94,14 @@ def load_results(file="scholarships.json"):
     RESULTS.clear()
     RESULTS.update(loaded)
 
+
 def print_shortlist():
     """Print every eligible applicant."""
     print("Shortlisted applicants:")
     for student_id, record in RESULTS.items():
         if record["eligible"]:
             print(" ", student_id, "score =", record["score"])
+
 
 def main():
     """Run the screener."""
@@ -114,6 +123,7 @@ def main():
     persist_results()
     load_results()
     print_shortlist()
+
 
 if __name__ == "__main__":
     main()
